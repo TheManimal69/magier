@@ -8,12 +8,32 @@ public class player1 : MonoBehaviour
     public Rigidbody2D rig;
     public SpriteRenderer rend;
 
+
+    Animator animate;
+
+    private void Start()
+    {
+
+        animate = gameObject.GetComponent<Animator>();
+
+
+
+    }
+
+
     void FixedUpdate()
     {
-        float xInput = Input.GetAxis("Horizontal");
-        float yInput = Input.GetAxis("Vertical");
+        float xInput = Input.GetAxis("Horizontal") * move_speed;
 
-        rig.velocity = new Vector2(xInput * move_speed, yInput * move_speed);
+
+
+        float yInput = Input.GetAxis("Vertical") * move_speed;
+
+        rig.velocity = new Vector2(xInput, yInput);
+
+        //animation//
+
+        animate.SetFloat("speed", Mathf.Abs(xInput    +    yInput)); 
     }
 
     /*

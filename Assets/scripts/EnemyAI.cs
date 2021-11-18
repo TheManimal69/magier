@@ -14,8 +14,8 @@ public class EnemyAI : MonoBehaviour
 
     Path path;
 
-    int currentWaypoint  = 0; 
-    bool reachedEndOfPath =   false;
+    int currentWaypoint = 0; 
+    bool reachedEndOfPath = false;
     //References
     Seeker seeker;
     Rigidbody2D rb;
@@ -24,34 +24,53 @@ public class EnemyAI : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        seeker.StartPath(rb.position, target.position, OnPathComplete);
+        InvokeRepeating("UpdatePath", 0f, 0.5f);
+            //to do create update path method
     }
 
     // Update is called once per frame
-    void FixedUpdate(  )
+    void FixedUpdate()
     {
-          if (path == null) 
-          {
+        if (path == null)
+        {
             return;
-          } 
-          if (currentWaypoint >= path.vectorPath.Count) 
-          {
+        }
+        if (currentWaypoint >= path.vectorPath.Count)
+        {
             reachedEndOfPath = true;
             return;
-          } else 
-          {
+        } else
+        {
             reachedEndOfPath = false;
-          }
+        }
 
-        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint   ] - rb.position).normalized;
+        Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
         Vector2 force = direction * speed * Time.deltaTime;
         rb.AddForce(force);
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
-        if (      distance < nextWaypointDistance) 
+        if (distance < nextWaypointDistance)
         {
             currentWaypoint++;
         }
+
+
+        if (force.x >= 0.01f)
+        {
+            enemyGFX.localScale = new Vector3(1f, 1f, 1f);
+        }
+        else if (force.x <= -0.01f)
+        {
+            enemyGFX.localScale = new Vector3(-1f, 1f, 1f);
+        }
     }
+
+    void UpdatePath()
+    {
+        if (seeker.IsDone()) {
+            seeker.StartPath(rb.position, target.position, OnPathComplete);
+        }
+    }
+
     void OnPathComplete(Path p) 
     {
         if (!p.error) 
